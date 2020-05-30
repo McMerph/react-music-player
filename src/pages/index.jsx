@@ -1,10 +1,19 @@
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
-import React, { useState } from 'react';
+import React, { createRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import IconButton from '@material-ui/core/IconButton';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
+import VolumeSlider from '../components/volume-slider';
 
-const Header = styled.h1`
-  margin: 0;
+const Controls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const Input = styled.input`
+  display: none;
 `;
 
 const readFile = (file) =>
@@ -20,7 +29,9 @@ const readFile = (file) =>
   });
 
 const IndexPage = () => {
+  const audioRef = createRef();
   const [src, setSrc] = useState(undefined);
+  const [volume, setVolume] = useState(0.7);
   const onChange = async (event) => {
     const target = event.currentTarget;
     if (target.files && target.files[0]) {
@@ -28,22 +39,49 @@ const IndexPage = () => {
       setSrc(data);
     }
   };
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  const [onPlay, onPause] = ['play', 'pause'].map((action) => () => {
+    if (audioRef.current) {
+      audioRef.current[action]();
+    }
+  });
 
   return (
     <>
-      <Header>Hi!</Header>
+      <Input
+        id="files-chooser"
+        type="file"
+        accept=".mp3,.flac,.ogg,.wav"
+        multiple
+        onChange={onChange}
+      />
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label htmlFor="files-chooser">
-        Choose file(s)
-        <input
-          id="files-chooser"
-          type="file"
-          accept=".mp3,.flac,.ogg,.wav"
-          multiple
-          onChange={onChange}
-        />
+        <IconButton aria-label="add file(s)" component="span">
+          <AddCircleOutlineIcon />
+        </IconButton>
       </label>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      {src && <audio controls autoPlay src={src} />}
+
+      {src && (
+        <>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <audio autoPlay src={src} ref={audioRef} />
+          <Controls>
+            <IconButton aria-label="play" color="primary" onClick={onPlay}>
+              <PlayCircleOutlineIcon />
+            </IconButton>
+            <IconButton aria-label="pause" color="secondary" onClick={onPause}>
+              <PauseCircleOutlineIcon />
+            </IconButton>
+            <VolumeSlider volume={volume} setVolume={setVolume} />
+          </Controls>
+        </>
+      )}
     </>
   );
 };
