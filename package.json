@@ -1,0 +1,61 @@
+{
+  "name": "react-music-player",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "gatsby develop -H 0.0.0.0 -p 8000 -o",
+    "build": "gatsby build",
+    "serve": "gatsby serve -H 0.0.0.0 -p 8000",
+    "format": "prettier --write \"**/*.{js,jsx,json,md,html}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,json,md,html}\"",
+    "lint:js": "eslint . --ext .js --ext .jsx",
+    "lint:css": "stylelint \"./src/**/*.js\" \"./src/**/*.jsx\"",
+    "lint:fix": "eslint . --fix --ext .js --ext .jsx",
+    "format-lint": "npm run format && npm run lint:js && npm run lint:css",
+    "ci": "npm run format:check && npm run lint:js && npm run lint:css",
+    "heroku-postbuild": "npm run build && npm run ci"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-plugin-styled-components": "^1.10.7",
+    "browser-update": "^3.3.19",
+    "gatsby": "^2.22.12",
+    "gatsby-plugin-manifest": "^2.4.9",
+    "gatsby-plugin-react-helmet": "^3.3.2",
+    "gatsby-plugin-styled-components": "^3.3.2",
+    "normalize.css": "^8.0.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-helmet": "^6.0.0",
+    "styled-components": "^5.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^2.5.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.7",
+    "prettier": "^2.0.5",
+    "stylelint": "^13.5.0",
+    "stylelint-config-recommended": "^3.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
+  }
+}

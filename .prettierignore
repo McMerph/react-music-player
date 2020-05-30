@@ -1,0 +1,9 @@
+# gatsby files
+.cache/
+public/
+
+# heroku files
+.heroku
+
+temp/
+tmp/

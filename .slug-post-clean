@@ -1,0 +1,14 @@
+.eslintignore
+.eslintrc.json
+.gitignore
+.prettierignore
+.prettierrc
+.stylelintrc
+assets
+gatsby-browser.js
+gatsby-config.js
+gatsby-node.js
+node_modules
+package-lock.json
+package.json
+src
