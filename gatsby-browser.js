@@ -10,4 +10,4 @@ browserUpdate({
   api: 2019.11,
 });
 
-export { default as wrapPageElement } from './wrap-page-element';
+export { default as wrapPageElement } from './src/wrap-page-element';

@@ -8,7 +8,6 @@ assets
 gatsby-browser.js
 gatsby-config.js
 gatsby-ssr.js
-wrap-page-element.jsx
 node_modules
 package-lock.json
 package.json

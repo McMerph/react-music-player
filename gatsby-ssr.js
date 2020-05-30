@@ -2,4 +2,4 @@
 
 import 'normalize.css';
 
-export { default as wrapPageElement } from './wrap-page-element';
+export { default as wrapPageElement } from './src/wrap-page-element';
