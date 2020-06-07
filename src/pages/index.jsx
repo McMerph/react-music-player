@@ -1,3 +1,4 @@
+// TODO Handle errors!
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
 import React, { createRef, useState, useEffect } from 'react';
@@ -6,37 +7,43 @@ import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
+import readSrc from '../utils/read-src';
+import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
+import prettyPrintSeconds from '../utils/pretty-print-seconds';
 import VolumeSlider from '../components/volume-slider';
+import Playlist from '../components/playlist';
 
 const Controls = styled.div`
   display: flex;
   align-items: center;
+  max-width: 360px;
 `;
 const Input = styled.input`
   display: none;
 `;
 
-const readFile = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      resolve(event.target.result);
-    };
-    reader.onerror = (error) => {
-      reject(error);
-    };
-    reader.readAsDataURL(file);
-  });
+const getList = async (files) => {
+  const durations = await Promise.all(
+    Array.from(files).map(readAudioDurationInSeconds)
+  );
+  return durations.map((duration, i) => ({
+    file: files[i],
+    duration: prettyPrintSeconds(duration),
+  }));
+};
 
 const IndexPage = () => {
   const audioRef = createRef();
-  const [src, setSrc] = useState(undefined);
+  const [audioData, setAudioData] = useState(null);
   const [volume, setVolume] = useState(0.7);
   const onChange = async (event) => {
     const target = event.currentTarget;
     if (target.files && target.files[0]) {
-      const data = await readFile(target.files[0]);
-      setSrc(data);
+      const [src, list] = await Promise.all([
+        readSrc(target.files[0]),
+        getList(target.files),
+      ]);
+      setAudioData({ src, list });
     }
   };
   useEffect(() => {
@@ -67,10 +74,10 @@ const IndexPage = () => {
         </IconButton>
       </label>
 
-      {src && (
+      {audioData && (
         <>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio autoPlay src={src} ref={audioRef} />
+          <audio autoPlay src={audioData.src} ref={audioRef} />
           <Controls>
             <IconButton aria-label="play" color="primary" onClick={onPlay}>
               <PlayCircleOutlineIcon />
@@ -80,6 +87,12 @@ const IndexPage = () => {
             </IconButton>
             <VolumeSlider volume={volume} setVolume={setVolume} />
           </Controls>
+          <Playlist
+            data={audioData.list.map(({ file, duration }) => ({
+              name: file.name,
+              duration,
+            }))}
+          />
         </>
       )}
     </>
