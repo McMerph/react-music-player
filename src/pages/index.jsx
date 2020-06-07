@@ -1,7 +1,7 @@
 // TODO Handle errors!
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
-import React, { createRef, useState, useEffect } from 'react';
+import React, { createRef, useState } from 'react';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -35,7 +35,6 @@ const getList = async (files) => {
 const IndexPage = () => {
   const audioRef = createRef();
   const [audioData, setAudioData] = useState(null);
-  const [volume, setVolume] = useState(0.7);
   const onChange = async (event) => {
     const target = event.currentTarget;
     if (target.files && target.files[0]) {
@@ -46,11 +45,6 @@ const IndexPage = () => {
       setAudioData({ src, list });
     }
   };
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
 
   const [onPlay, onPause] = ['play', 'pause'].map((action) => () => {
     if (audioRef.current) {
@@ -85,7 +79,7 @@ const IndexPage = () => {
             <IconButton aria-label="pause" color="secondary" onClick={onPause}>
               <PauseCircleOutlineIcon />
             </IconButton>
-            <VolumeSlider volume={volume} setVolume={setVolume} />
+            <VolumeSlider audioRef={audioRef} />
           </Controls>
           <Playlist
             data={audioData.list.map(({ file, duration }) => ({
