@@ -3,12 +3,16 @@ const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
 
 const prettyPrintSeconds = (seconds) => {
   const hours = Math.floor(seconds / SECONDS_IN_HOUR);
-  const minutes = Math.floor(
+  let minutes = Math.floor(
     (seconds - hours * SECONDS_IN_HOUR) / SECONDS_IN_MINUTE
   );
-  const restSeconds = Math.floor(
+  let restSeconds = Math.round(
     seconds - hours * SECONDS_IN_HOUR - minutes * SECONDS_IN_MINUTE
   );
+  if (restSeconds === SECONDS_IN_MINUTE) {
+    restSeconds = 0;
+    minutes += 1;
+  }
 
   return [hours, minutes, restSeconds]
     .filter((v, i) => i > 0 || v > 0)
