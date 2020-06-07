@@ -1,7 +1,7 @@
 // TODO Handle errors!
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
-import React, { createRef, useState } from 'react';
+import React, { createRef, useState, useRef } from 'react';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -10,6 +10,7 @@ import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
 import readSrc from '../utils/read-src';
 import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
 import prettyPrintSeconds from '../utils/pretty-print-seconds';
+import visualize from '../utils/visualize';
 import VolumeSlider from '../components/volume-slider';
 import Playlist from '../components/playlist';
 
@@ -20,6 +21,10 @@ const Controls = styled.div`
 `;
 const Input = styled.input`
   display: none;
+`;
+const Canvas = styled.canvas`
+  height: 100px;
+  width: 100%;
 `;
 
 const getList = async (files) => {
@@ -34,7 +39,10 @@ const getList = async (files) => {
 
 const IndexPage = () => {
   const audioRef = createRef();
+  const canvasRef = createRef();
   const [audioData, setAudioData] = useState(null);
+  const visualizeRef = useRef(false);
+
   const onChange = async (event) => {
     const target = event.currentTarget;
     if (target.files && target.files[0]) {
@@ -45,8 +53,13 @@ const IndexPage = () => {
       setAudioData({ src, list });
     }
   };
-
-  const [onPlay, onPause] = ['play', 'pause'].map((action) => () => {
+  const onCanPlay = () => {
+    if (audioRef.current && canvasRef.current && !visualizeRef.current) {
+      visualize(audioRef.current, canvasRef.current);
+      visualizeRef.current = true;
+    }
+  };
+  const [play, pause] = ['play', 'pause'].map((action) => () => {
     if (audioRef.current) {
       audioRef.current[action]();
     }
@@ -70,13 +83,19 @@ const IndexPage = () => {
 
       {audioData && (
         <>
+          <Canvas ref={canvasRef} />
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio autoPlay src={audioData.src} ref={audioRef} />
+          <audio
+            autoPlay
+            src={audioData.src}
+            ref={audioRef}
+            onCanPlay={onCanPlay}
+          />
           <Controls>
-            <IconButton aria-label="play" color="primary" onClick={onPlay}>
+            <IconButton aria-label="play" color="primary" onClick={play}>
               <PlayCircleOutlineIcon />
             </IconButton>
-            <IconButton aria-label="pause" color="secondary" onClick={onPause}>
+            <IconButton aria-label="pause" color="secondary" onClick={pause}>
               <PauseCircleOutlineIcon />
             </IconButton>
             <VolumeSlider audioRef={audioRef} />
