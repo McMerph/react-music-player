@@ -46,12 +46,12 @@ VolumeSlider.propTypes = {
   // https://stackoverflow.com/questions/48007326/what-is-the-correct-proptype-for-a-ref-in-react
   audioRef: PropTypes.oneOfType([
     PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(HTMLInputElement) }),
+    PropTypes.shape({ current: PropTypes.object }),
   ]),
 };
 
 VolumeSlider.defaultProps = {
-  audioRef: null,
+  audioRef: { current: null },
 };
 
 export default VolumeSlider;

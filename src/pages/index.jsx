@@ -1,30 +1,21 @@
-// TODO Handle errors!
-// TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
-
-import React, { createRef, useState, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
+import styled from 'styled-components';
 import readSrc from '../utils/read-src';
 import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
 import prettyPrintSeconds from '../utils/pretty-print-seconds';
-import visualize from '../utils/visualize';
-import VolumeSlider from '../components/volume-slider';
-import Playlist from '../components/playlist';
+import Content from '../components/content';
 
-const Controls = styled.div`
-  display: flex;
-  align-items: center;
-  max-width: 360px;
-`;
+const State = Object.freeze({
+  Initial: 'Initial',
+  Loading: 'Loading',
+  Ready: 'Ready',
+  Error: 'Error',
+});
+
 const Input = styled.input`
   display: none;
-`;
-const Canvas = styled.canvas`
-  height: 100px;
-  width: 100%;
 `;
 
 const getList = async (files) => {
@@ -38,32 +29,30 @@ const getList = async (files) => {
 };
 
 const IndexPage = () => {
-  const audioRef = createRef();
-  const canvasRef = createRef();
-  const [audioData, setAudioData] = useState(null);
-  const visualizeRef = useRef(false);
+  const [audioData, setAudioData] = useState({
+    state: State.Initial,
+    src: null,
+    list: [],
+    error: null,
+  });
 
   const onChange = async (event) => {
     const target = event.currentTarget;
     if (target.files && target.files[0]) {
-      const [src, list] = await Promise.all([
-        readSrc(target.files[0]),
-        getList(target.files),
-      ]);
-      setAudioData({ src, list });
+      try {
+        setAudioData((prev) => ({ ...prev, state: State.Loading }));
+        const [src, list] = await Promise.all([
+          readSrc(target.files[0]),
+          getList(target.files),
+        ]);
+        setAudioData({ src, list, state: State.Ready });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        setAudioData((prev) => ({ ...prev, state: State.Error, error }));
+      }
     }
   };
-  const onCanPlay = () => {
-    if (audioRef.current && canvasRef.current && !visualizeRef.current) {
-      visualize(audioRef.current, canvasRef.current);
-      visualizeRef.current = true;
-    }
-  };
-  const [play, pause] = ['play', 'pause'].map((action) => () => {
-    if (audioRef.current) {
-      audioRef.current[action]();
-    }
-  });
 
   return (
     <>
@@ -81,33 +70,14 @@ const IndexPage = () => {
         </IconButton>
       </label>
 
-      {audioData && (
-        <>
-          <Canvas ref={canvasRef} />
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio
-            autoPlay
-            src={audioData.src}
-            ref={audioRef}
-            onCanPlay={onCanPlay}
-          />
-          <Controls>
-            <IconButton aria-label="play" color="primary" onClick={play}>
-              <PlayCircleOutlineIcon />
-            </IconButton>
-            <IconButton aria-label="pause" color="secondary" onClick={pause}>
-              <PauseCircleOutlineIcon />
-            </IconButton>
-            <VolumeSlider audioRef={audioRef} />
-          </Controls>
-          <Playlist
-            data={audioData.list.map(({ file, duration }) => ({
-              name: file.name,
-              duration,
-            }))}
-          />
-        </>
-      )}
+      <Content
+        state={audioData.state}
+        src={audioData.src}
+        list={audioData.list.map(({ file, duration }) => ({
+          name: file.name,
+          duration,
+        }))}
+      />
     </>
   );
 };
