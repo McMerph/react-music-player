@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import readSrc from '../utils/read-src';
 import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
 import prettyPrintSeconds from '../utils/pretty-print-seconds';
+import asyncPool from '../utils/async-pool';
 import Content from '../components/content';
 
 const State = Object.freeze({
@@ -13,18 +14,23 @@ const State = Object.freeze({
   Ready: 'Ready',
   Error: 'Error',
 });
+// TODO Make it adjustable? Store in localStorage?
+const CONCURRENCY = 4;
 
 const Input = styled.input`
   display: none;
 `;
 
 const getList = async (files) => {
-  const durations = await Promise.all(
-    Array.from(files).map(readAudioDurationInSeconds)
+  const durations = await asyncPool(
+    CONCURRENCY,
+    files,
+    readAudioDurationInSeconds
   );
-  return durations.map((duration, i) => ({
-    file: files[i],
-    duration: prettyPrintSeconds(duration),
+
+  return files.map((file, i) => ({
+    file,
+    duration: prettyPrintSeconds(durations[i]),
   }));
 };
 
@@ -43,7 +49,7 @@ const IndexPage = () => {
         setAudioData((prev) => ({ ...prev, state: State.Loading }));
         const [src, list] = await Promise.all([
           readSrc(target.files[0]),
-          getList(target.files),
+          getList(Array.from(target.files)),
         ]);
         setAudioData({ src, list, state: State.Ready });
       } catch (error) {
