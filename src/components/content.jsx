@@ -34,9 +34,6 @@ const Content = ({ state, src, list, toNext }) => {
       visualize(node, canvasRef.current);
     }
   });
-  const [play, pause] = ['play', 'pause'].map((action) => () => {
-    audioRef.current[action]();
-  });
 
   if (state === State.Initial) return null;
   if (state === State.AddingFiles || state === State.LoadingSrc)
@@ -52,6 +49,9 @@ const Content = ({ state, src, list, toNext }) => {
       </div>
     );
 
+  const [play, pause] = ['play', 'pause'].map((action) => () => {
+    audioRef.current[action]();
+  });
   return (
     <>
       <Canvas ref={canvasRef} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import styled from 'styled-components';
 import readSrc from '../utils/read-src';
 import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
@@ -52,6 +53,16 @@ const IndexPage = () => {
     handle();
   }, [audioData.file]);
 
+  const toPrevious = () => {
+    setAudioData((prev) => {
+      if (prev.list.length <= 1) return prev;
+
+      const index = prev.list.findIndex((v) => v.file === prev.file);
+      const prevIndex = index === 0 ? prev.list.length - 1 : index - 1;
+      const { file } = prev.list[prevIndex];
+      return { ...prev, state: State.LoadingSrc, file };
+    });
+  };
   const toNext = () => {
     setAudioData((prev) => {
       if (prev.list.length <= 1) return prev;
@@ -101,6 +112,9 @@ const IndexPage = () => {
           <AddCircleOutlineIcon />
         </IconButton>
       </label>
+      <IconButton aria-label="previous" color="primary" onClick={toPrevious}>
+        <SkipPreviousIcon />
+      </IconButton>
       <IconButton aria-label="next" color="primary" onClick={toNext}>
         <SkipNextIcon />
       </IconButton>
