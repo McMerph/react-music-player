@@ -24,7 +24,7 @@ const Canvas = styled.canvas`
 `;
 
 const Content = ({ stage, src, list, toNext }) => {
-  const [audioData, setAudioData] = useState(null);
+  const [trackInfo, setTrackInfo] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
   // https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
@@ -62,13 +62,13 @@ const Content = ({ stage, src, list, toNext }) => {
         ref={audioCallback}
         onTimeUpdate={() => {
           const { currentTime, duration } = audioRef.current;
-          setAudioData({ currentTime, duration });
+          setTrackInfo({ currentTime, duration });
           if (audioRef.current.ended) {
             toNext();
           }
         }}
       />
-      <DurationSlider data={audioData} audioRef={audioRef} />
+      <DurationSlider data={trackInfo} audioRef={audioRef} />
       <Controls>
         <IconButton aria-label="play" color="primary" onClick={play}>
           <PlayCircleOutlineIcon />
