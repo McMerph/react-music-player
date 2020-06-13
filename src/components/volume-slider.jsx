@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import Slider from '@material-ui/core/Slider';
 import VolumeDown from '@material-ui/icons/VolumeDown';
 import styled from 'styled-components';
+import ActionType from '../store/action-type';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -12,16 +14,16 @@ const Wrapper = styled.div`
 `;
 
 const VolumeSlider = ({ audioRef }) => {
-  // TODO Make it adjustable? Store in localStorage?
-  const [volume, setVolume] = useState(0.7);
+  const volume = useSelector((state) => state.volume);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (audioRef.current) {
       // eslint-disable-next-line no-param-reassign
       audioRef.current.volume = volume;
     }
   }, [volume]);
-  const handleChange = (event, newValue) => {
-    setVolume(newValue);
+  const handleChange = (event, newVolume) => {
+    dispatch({ type: ActionType.SetVolume, volume: newVolume });
   };
 
   return (
