@@ -99,19 +99,6 @@ const IndexPage = () => {
 
   return (
     <Wrapper>
-      <Input
-        id="files-chooser"
-        type="file"
-        accept=".mp3,.flac,.ogg,.wav"
-        multiple
-        onChange={addFiles}
-      />
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-      <label htmlFor="files-chooser">
-        <IconButton aria-label="add file(s)" component="span">
-          <AddCircleOutlineIcon />
-        </IconButton>
-      </label>
       <IconButton aria-label="previous" color="primary" onClick={toPrevious}>
         <SkipPreviousIcon />
       </IconButton>
@@ -129,6 +116,22 @@ const IndexPage = () => {
         }))}
         toNext={toNext}
       />
+
+      <div>
+        <Input
+          id="files-chooser"
+          type="file"
+          accept=".mp3,.flac,.ogg,.wav"
+          multiple
+          onChange={addFiles}
+        />
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label htmlFor="files-chooser">
+          <IconButton aria-label="add file(s)" component="span">
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </label>
+      </div>
     </Wrapper>
   );
 };
