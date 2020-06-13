@@ -15,15 +15,13 @@ const DurationSlider = ({ data, audioRef }) => {
   };
 
   return (
-    <>
-      <Slider
-        value={currentTime / duration}
-        onChange={handleChange}
-        step={1 / duration}
-        min={0.0}
-        max={1.0}
-      />
-    </>
+    <Slider
+      value={currentTime / duration}
+      onChange={handleChange}
+      step={1 / duration}
+      min={0.0}
+      max={1.0}
+    />
   );
 };
 
