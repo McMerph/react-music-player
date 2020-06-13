@@ -1,6 +1,6 @@
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
-import React, { createRef, useRef, useCallback } from 'react';
+import React, { createRef, useRef, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
@@ -9,6 +9,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import styled from 'styled-components';
 import visualize from '../utils/visualize';
+import DurationSlider from './duration-slider';
 import VolumeSlider from './volume-slider';
 import Playlist from './playlist';
 
@@ -29,11 +30,12 @@ const Canvas = styled.canvas`
 `;
 
 const Content = ({ state, src, list }) => {
+  const [audioData, setAudioData] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
   // https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
   const audioCallback = useCallback((node) => {
-    if (node !== null) {
+    if (node !== null && node !== audioRef.current) {
       audioRef.current = node;
       visualize(node, canvasRef.current);
     }
@@ -60,7 +62,16 @@ const Content = ({ state, src, list }) => {
     <>
       <Canvas ref={canvasRef} />
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio autoPlay src={src} ref={audioCallback} />
+      <audio
+        autoPlay
+        src={src}
+        ref={audioCallback}
+        onTimeUpdate={() => {
+          const { currentTime, duration } = audioRef.current;
+          setAudioData({ currentTime, duration });
+        }}
+      />
+      <DurationSlider data={audioData} audioRef={audioRef} />
       <Controls>
         <IconButton aria-label="play" color="primary" onClick={play}>
           <PlayCircleOutlineIcon />
