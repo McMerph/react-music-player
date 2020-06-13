@@ -8,7 +8,10 @@ const DurationSlider = ({ data, audioRef }) => {
   const { currentTime, duration } = data;
   const handleChange = (event, newValue) => {
     // eslint-disable-next-line no-param-reassign
-    audioRef.current.currentTime = newValue * duration;
+    audioRef.current.currentTime = Math.min(
+      newValue * duration,
+      duration - 0.1
+    );
   };
 
   return (
