@@ -13,7 +13,7 @@ const CONCURRENCY = 4;
 
 const Wrapper = styled.div`
   max-width: 360px;
-  padding: 0 12px;
+  padding: 12px 12px 0;
 `;
 
 const getList = async (files) => {
