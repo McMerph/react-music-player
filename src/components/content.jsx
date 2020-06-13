@@ -3,6 +3,8 @@
 import React, { createRef, useRef, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
+import SkipNextIcon from '@material-ui/icons/SkipNext';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
@@ -23,7 +25,7 @@ const Canvas = styled.canvas`
   width: 100%;
 `;
 
-const Content = ({ stage, src, list, toNext }) => {
+const Content = ({ stage, src, list, setAudioData }) => {
   const [trackInfo, setTrackInfo] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
@@ -52,6 +54,27 @@ const Content = ({ stage, src, list, toNext }) => {
   const [play, pause] = ['play', 'pause'].map((action) => () => {
     audioRef.current[action]();
   });
+  // TODO DRY
+  const toPrevious = () => {
+    setAudioData((prev) => {
+      if (prev.list.length <= 1) return prev;
+
+      const index = prev.list.findIndex((v) => v.file === prev.file);
+      const prevIndex = index === 0 ? prev.list.length - 1 : index - 1;
+      const { file } = prev.list[prevIndex];
+      return { ...prev, stage: Stage.LoadingSrc, file };
+    });
+  };
+  const toNext = () => {
+    setAudioData((prev) => {
+      if (prev.list.length <= 1) return prev;
+
+      const index = prev.list.findIndex((v) => v.file === prev.file);
+      const nextIndex = index === prev.list.length - 1 ? 0 : index + 1;
+      const { file } = prev.list[nextIndex];
+      return { ...prev, stage: Stage.LoadingSrc, file };
+    });
+  };
   return (
     <>
       <Canvas ref={canvasRef} />
@@ -70,11 +93,17 @@ const Content = ({ stage, src, list, toNext }) => {
       />
       <DurationSlider data={trackInfo} audioRef={audioRef} />
       <Controls>
+        <IconButton aria-label="previous" color="primary" onClick={toPrevious}>
+          <SkipPreviousIcon />
+        </IconButton>
         <IconButton aria-label="play" color="primary" onClick={play}>
           <PlayCircleOutlineIcon />
         </IconButton>
         <IconButton aria-label="pause" color="secondary" onClick={pause}>
           <PauseCircleOutlineIcon />
+        </IconButton>
+        <IconButton aria-label="next" color="primary" onClick={toNext}>
+          <SkipNextIcon />
         </IconButton>
         <VolumeSlider audioRef={audioRef} />
       </Controls>
@@ -93,7 +122,7 @@ Content.propTypes = {
     }).isRequired
   ).isRequired,
   src: PropTypes.string,
-  toNext: PropTypes.func.isRequired,
+  setAudioData: PropTypes.func.isRequired,
 };
 Content.defaultProps = { src: null };
 
