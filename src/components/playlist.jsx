@@ -18,10 +18,10 @@ export default function Playlist({ data }) {
   return (
     <Wrapper backgroundColor={theme.palette.background.paper}>
       <List>
-        {data.map(({ name, duration }, i) => (
+        {data.map(({ current, name, duration }, i) => (
           // eslint-disable-next-line react/no-array-index-key
           <ListItem key={i}>
-            <ListItemText primary={name} />
+            <ListItemText primary={current ? `✓ ${name}` : name} />
             <Typography variant="subtitle2">{duration}</Typography>
           </ListItem>
         ))}
@@ -33,6 +33,7 @@ export default function Playlist({ data }) {
 Playlist.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.exact({
+      current: PropTypes.bool.isRequired,
       name: PropTypes.string.isRequired,
       duration: PropTypes.string.isRequired,
     }).isRequired
