@@ -16,6 +16,7 @@ const StyledSlider = styled(Slider)`
 `;
 
 const VolumeSlider = ({ audioRef }) => {
+  // TODO Make it adjustable? Store in localStorage?
   const [volume, setVolume] = useState(0.7);
   useEffect(() => {
     if (audioRef.current) {

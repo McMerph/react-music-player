@@ -10,7 +10,6 @@ import styled from 'styled-components';
 const Wrapper = styled.div`
   background-color: ${(props) => props.backgroundColor};
   width: 100%;
-  max-width: 360px;
 `;
 
 export default function Playlist({ data }) {

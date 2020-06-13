@@ -20,6 +20,10 @@ const CONCURRENCY = 4;
 const Input = styled.input`
   display: none;
 `;
+const Wrapper = styled.div`
+  max-width: 360px;
+  padding: 0 12px;
+`;
 
 const getList = async (files) => {
   const durations = await asyncPool(
@@ -61,7 +65,7 @@ const IndexPage = () => {
   };
 
   return (
-    <>
+    <Wrapper>
       <Input
         id="files-chooser"
         type="file"
@@ -84,7 +88,7 @@ const IndexPage = () => {
           duration,
         }))}
       />
-    </>
+    </Wrapper>
   );
 };
 

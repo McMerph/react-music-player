@@ -22,10 +22,9 @@ const State = Object.freeze({
 const Controls = styled.div`
   display: flex;
   align-items: center;
-  max-width: 360px;
 `;
 const Canvas = styled.canvas`
-  height: 100px;
+  height: 48px;
   width: 100%;
 `;
 
