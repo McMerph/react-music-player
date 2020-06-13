@@ -1,4 +1,4 @@
-const State = Object.freeze({
+const Stage = Object.freeze({
   Initial: 'Initial',
   AddingFiles: 'AddingFiles',
   LoadingSrc: 'LoadingSrc',
@@ -6,4 +6,4 @@ const State = Object.freeze({
   Error: 'Error',
 });
 
-export default State;
+export default Stage;

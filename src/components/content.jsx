@@ -9,7 +9,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import styled from 'styled-components';
 import visualize from '../utils/visualize';
-import State from '../domain/state';
+import Stage from '../domain/stage';
 import DurationSlider from './duration-slider';
 import VolumeSlider from './volume-slider';
 import Playlist from './playlist';
@@ -23,7 +23,7 @@ const Canvas = styled.canvas`
   width: 100%;
 `;
 
-const Content = ({ state, src, list, toNext }) => {
+const Content = ({ stage, src, list, toNext }) => {
   const [audioData, setAudioData] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
@@ -35,14 +35,14 @@ const Content = ({ state, src, list, toNext }) => {
     }
   });
 
-  if (state === State.Initial) return null;
-  if (state === State.AddingFiles || state === State.LoadingSrc)
+  if (stage === Stage.Initial) return null;
+  if (stage === Stage.AddingFiles || stage === Stage.LoadingSrc)
     return (
       <div>
         <CircularProgress />
       </div>
     );
-  if (state === State.Error)
+  if (stage === Stage.Error)
     return (
       <div>
         <ErrorOutlineIcon color="secondary" />
@@ -84,7 +84,7 @@ const Content = ({ state, src, list, toNext }) => {
 };
 
 Content.propTypes = {
-  state: PropTypes.oneOf(Object.values(State)).isRequired,
+  stage: PropTypes.oneOf(Object.values(Stage)).isRequired,
   list: PropTypes.arrayOf(
     PropTypes.exact({
       current: PropTypes.bool.isRequired,
