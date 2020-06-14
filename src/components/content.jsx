@@ -132,7 +132,7 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
         </IconButton>
         <VolumeSlider audioRef={audioRef} />
       </Controls>
-      <Playlist data={list} />
+      <Playlist list={list} setAudioData={setAudioData} />
     </>
   );
 };
