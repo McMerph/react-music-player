@@ -12,20 +12,51 @@ const Wrapper = styled.div`
   background-color: ${(props) => props.backgroundColor};
   width: 100%;
 `;
-// https://github.com/styled-components/styled-components/issues/305#issuecomment-273794267
-const StyledList = styled(({ isDraggingOver, children, ...rest }) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <List {...rest}>{children}</List>
-))`
-  background-color: ${(props) => (props.isDraggingOver ? 'skyblue' : '#fff')};
+const StyledList = styled(List)`
   padding: 0;
   user-select: none;
 `;
+// https://github.com/styled-components/styled-components/issues/305#issuecomment-273794267
 const StyledListItem = styled(({ isDragging, children, ...rest }) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <ListItem {...rest}>{children}</ListItem>
 ))`
-  background-color: ${(props) => (props.isDragging ? 'lightgreen' : '#fff')};
+  background: ${(props) => (props.isDragging ? '#2098d1' : '#fff')};
+
+  /* https://github.com/IanLunn/Hover/blob/master/css/hover.css#L1410 */
+  vertical-align: middle;
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  position: relative;
+  transition-property: color;
+  transition-duration: 0.5s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #2098d1;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+  }
+  &:hover,
+  &:focus,
+  &:active {
+    color: white;
+  }
+  &:hover::before,
+  &:focus::before,
+  &:active::before {
+    transform: scaleX(1);
+    transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+  }
 `;
 
 export default function Playlist({ list, setAudioData }) {
@@ -55,12 +86,11 @@ export default function Playlist({ list, setAudioData }) {
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper backgroundColor={theme.palette.background.paper}>
         <Droppable droppableId="playlist">
-          {(droppableProvided, droppableSnapshot) => (
+          {(droppableProvided) => (
             <StyledList
               innerRef={droppableProvided.innerRef}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...droppableProvided.droppableProps}
-              isDraggingOver={droppableSnapshot.isDraggingOver}
             >
               {list.map(({ current, name, duration }, i) => (
                 <Draggable draggableId={name} index={i} key={name}>
