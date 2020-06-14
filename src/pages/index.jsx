@@ -32,6 +32,7 @@ const getList = async (files) => {
 const IndexPage = () => {
   const [audioData, setAudioData] = useState({
     stage: Stage.Initial,
+    repeat: false,
     list: [],
     file: null,
     src: null,
@@ -78,6 +79,7 @@ const IndexPage = () => {
           name: file.name,
           duration,
         }))}
+        repeat={audioData.repeat}
         setAudioData={setAudioData}
       />
       <AddFiles addFiles={addFiles} />

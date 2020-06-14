@@ -7,6 +7,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
+import RepeatIcon from '@material-ui/icons/Repeat';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import styled from 'styled-components';
@@ -25,7 +26,7 @@ const Canvas = styled.canvas`
   width: 100%;
 `;
 
-const Content = ({ stage, src, list, setAudioData }) => {
+const Content = ({ stage, src, list, repeat, setAudioData }) => {
   const [trackInfo, setTrackInfo] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
@@ -51,6 +52,8 @@ const Content = ({ stage, src, list, setAudioData }) => {
       </div>
     );
 
+  const firstTrack = list[0].current;
+  const lastTrack = list[list.length - 1].current;
   const [play, pause] = ['play', 'pause'].map((action) => () => {
     audioRef.current[action]();
   });
@@ -63,6 +66,10 @@ const Content = ({ stage, src, list, setAudioData }) => {
       if (prev.list.length <= 1) return prev;
 
       const index = prev.list.findIndex((v) => v.file === prev.file);
+      if (!repeat) {
+        if (forward && index === prev.list.length - 1) return prev;
+        if (!forward && index === 0) return prev;
+      }
       const neighborIndex = forward
         ? getNextIndex(prev.list, index)
         : getPreviousIndex(prev.list, index);
@@ -73,6 +80,9 @@ const Content = ({ stage, src, list, setAudioData }) => {
   const [toPrevious, toNext] = [false, true].map((forward) => () => {
     toNeighbor(forward);
   });
+  const toggleRepeat = () => {
+    setAudioData((prev) => ({ ...prev, repeat: !prev.repeat }));
+  };
   return (
     <>
       <Canvas ref={canvasRef} />
@@ -94,7 +104,7 @@ const Content = ({ stage, src, list, setAudioData }) => {
         <IconButton
           aria-label="previous"
           color="primary"
-          disabled={list.length <= 1}
+          disabled={list.length <= 1 || (!repeat && firstTrack)}
           onClick={toPrevious}
         >
           <SkipPreviousIcon />
@@ -108,10 +118,17 @@ const Content = ({ stage, src, list, setAudioData }) => {
         <IconButton
           aria-label="next"
           color="primary"
-          disabled={list.length <= 1}
+          disabled={list.length <= 1 || (!repeat && lastTrack)}
           onClick={toNext}
         >
           <SkipNextIcon />
+        </IconButton>
+        <IconButton
+          aria-label="repeat"
+          color={repeat ? 'primary' : 'default'}
+          onClick={toggleRepeat}
+        >
+          <RepeatIcon />
         </IconButton>
         <VolumeSlider audioRef={audioRef} />
       </Controls>
@@ -129,6 +146,7 @@ Content.propTypes = {
       duration: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
+  repeat: PropTypes.bool.isRequired,
   src: PropTypes.string,
   setAudioData: PropTypes.func.isRequired,
 };
