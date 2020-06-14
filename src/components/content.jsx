@@ -91,7 +91,12 @@ const Content = ({ stage, src, list, setAudioData }) => {
       />
       <DurationSlider data={trackInfo} audioRef={audioRef} />
       <Controls>
-        <IconButton aria-label="previous" color="primary" onClick={toPrevious}>
+        <IconButton
+          aria-label="previous"
+          color="primary"
+          disabled={list.length <= 1}
+          onClick={toPrevious}
+        >
           <SkipPreviousIcon />
         </IconButton>
         <IconButton aria-label="play" color="primary" onClick={play}>
@@ -100,7 +105,12 @@ const Content = ({ stage, src, list, setAudioData }) => {
         <IconButton aria-label="pause" color="secondary" onClick={pause}>
           <PauseCircleOutlineIcon />
         </IconButton>
-        <IconButton aria-label="next" color="primary" onClick={toNext}>
+        <IconButton
+          aria-label="next"
+          color="primary"
+          disabled={list.length <= 1}
+          onClick={toNext}
+        >
           <SkipNextIcon />
         </IconButton>
         <VolumeSlider audioRef={audioRef} />
