@@ -39,7 +39,7 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
   });
 
   if (stage === Stage.Initial) return null;
-  if (stage === Stage.AddingFiles || stage === Stage.ChangeFile)
+  if (stage === Stage.AddingFiles)
     return (
       <div>
         <CircularProgress />
