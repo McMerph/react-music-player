@@ -39,7 +39,7 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
   });
 
   if (stage === Stage.Initial) return null;
-  if (stage === Stage.AddingFiles || stage === Stage.LoadingSrc)
+  if (stage === Stage.AddingFiles || stage === Stage.ChangeFile)
     return (
       <div>
         <CircularProgress />
@@ -74,7 +74,7 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
         ? getNextIndex(prev.list, index)
         : getPreviousIndex(prev.list, index);
       const { file } = prev.list[neighborIndex];
-      return { ...prev, stage: Stage.LoadingSrc, file };
+      return { ...prev, stage: Stage.ChangeFile, file };
     });
   };
   const [toPrevious, toNext] = [false, true].map((forward) => () => {
@@ -142,7 +142,7 @@ Content.propTypes = {
   list: PropTypes.arrayOf(
     PropTypes.exact({
       current: PropTypes.bool.isRequired,
-      name: PropTypes.string.isRequired,
+      file: PropTypes.instanceOf(File),
       duration: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,

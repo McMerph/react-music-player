@@ -39,7 +39,7 @@ const IndexPage = () => {
     error: null,
   });
   useEffect(() => {
-    if (audioData.stage !== Stage.LoadingSrc) return;
+    if (audioData.stage !== Stage.ChangeFile) return;
 
     const handle = async () => {
       const src = await readSrc(audioData.file);
@@ -76,7 +76,7 @@ const IndexPage = () => {
         src={audioData.src}
         list={audioData.list.map(({ file, duration }) => ({
           current: audioData.file === file,
-          name: file.name,
+          file,
           duration,
         }))}
         repeat={audioData.repeat}

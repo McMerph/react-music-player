@@ -1,7 +1,7 @@
 const Stage = Object.freeze({
   Initial: 'Initial',
   AddingFiles: 'AddingFiles',
-  LoadingSrc: 'LoadingSrc',
+  ChangeFile: 'ChangeFile',
   Ready: 'Ready',
   Error: 'Error',
 });

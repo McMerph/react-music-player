@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
+import Stage from '../domain/stage';
 
 const Wrapper = styled.div`
   background-color: ${(props) => props.backgroundColor};
@@ -61,6 +62,10 @@ const StyledListItem = styled(({ isDragging, children, ...rest }) => (
 
 export default function Playlist({ list, setAudioData }) {
   const theme = useTheme();
+
+  const changeTrack = (file) => {
+    setAudioData((prev) => ({ ...prev, stage: Stage.ChangeFile, file }));
+  };
   const onDragEnd = (result) => {
     const { source, destination } = result;
     if (!destination) {
@@ -92,8 +97,8 @@ export default function Playlist({ list, setAudioData }) {
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...droppableProvided.droppableProps}
             >
-              {list.map(({ current, name, duration }, i) => (
-                <Draggable draggableId={name} index={i} key={name}>
+              {list.map(({ current, file, duration }, i) => (
+                <Draggable draggableId={file.name} index={i} key={file.name}>
                   {(draggableProvided, draggableSnapshot) => (
                     <StyledListItem
                       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -103,8 +108,11 @@ export default function Playlist({ list, setAudioData }) {
                       innerRef={draggableProvided.innerRef}
                       isDragging={draggableSnapshot.isDragging}
                       selected={current}
+                      onDoubleClick={() => {
+                        changeTrack(file);
+                      }}
                     >
-                      <ListItemText primary={name} />
+                      <ListItemText primary={file.name} />
                       <Typography variant="subtitle2">{duration}</Typography>
                     </StyledListItem>
                   )}
@@ -123,7 +131,7 @@ Playlist.propTypes = {
   list: PropTypes.arrayOf(
     PropTypes.exact({
       current: PropTypes.bool.isRequired,
-      name: PropTypes.string.isRequired,
+      file: PropTypes.instanceOf(File),
       duration: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
