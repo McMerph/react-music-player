@@ -72,8 +72,9 @@ export default function Playlist({ list, setAudioData }) {
                       {...draggableProvided.dragHandleProps}
                       innerRef={draggableProvided.innerRef}
                       isDragging={draggableSnapshot.isDragging}
+                      selected={current}
                     >
-                      <ListItemText primary={current ? `✓ ${name}` : name} />
+                      <ListItemText primary={name} />
                       <Typography variant="subtitle2">{duration}</Typography>
                     </StyledListItem>
                   )}
