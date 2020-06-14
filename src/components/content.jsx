@@ -54,27 +54,25 @@ const Content = ({ stage, src, list, setAudioData }) => {
   const [play, pause] = ['play', 'pause'].map((action) => () => {
     audioRef.current[action]();
   });
-  // TODO DRY
-  const toPrevious = () => {
+  const getNextIndex = (arr, index) =>
+    index === arr.length - 1 ? 0 : index + 1;
+  const getPreviousIndex = (arr, index) =>
+    index === 0 ? arr.length - 1 : index - 1;
+  const toNeighbor = (forward) => {
     setAudioData((prev) => {
       if (prev.list.length <= 1) return prev;
 
       const index = prev.list.findIndex((v) => v.file === prev.file);
-      const prevIndex = index === 0 ? prev.list.length - 1 : index - 1;
-      const { file } = prev.list[prevIndex];
+      const neighborIndex = forward
+        ? getNextIndex(prev.list, index)
+        : getPreviousIndex(prev.list, index);
+      const { file } = prev.list[neighborIndex];
       return { ...prev, stage: Stage.LoadingSrc, file };
     });
   };
-  const toNext = () => {
-    setAudioData((prev) => {
-      if (prev.list.length <= 1) return prev;
-
-      const index = prev.list.findIndex((v) => v.file === prev.file);
-      const nextIndex = index === prev.list.length - 1 ? 0 : index + 1;
-      const { file } = prev.list[nextIndex];
-      return { ...prev, stage: Stage.LoadingSrc, file };
-    });
-  };
+  const [toPrevious, toNext] = [false, true].map((forward) => () => {
+    toNeighbor(forward);
+  });
   return (
     <>
       <Canvas ref={canvasRef} />
