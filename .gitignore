@@ -24,6 +24,8 @@ chrome-user-data
 *.swp
 *.swo
 
+.npmrc
+
 temp/
 tmp/
 .cache/
