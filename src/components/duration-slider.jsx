@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Slider from '@material-ui/core/Slider';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  padding: 0 12px;
+`;
 
 const DurationSlider = ({ data, audioRef }) => {
   if (data === null) return null;
@@ -15,13 +20,15 @@ const DurationSlider = ({ data, audioRef }) => {
   };
 
   return (
-    <Slider
-      value={currentTime / duration}
-      onChangeCommitted={handleChange}
-      step={1 / duration}
-      min={0.0}
-      max={1.0}
-    />
+    <Wrapper>
+      <Slider
+        value={currentTime / duration}
+        onChangeCommitted={handleChange}
+        step={1 / duration}
+        min={0.0}
+        max={1.0}
+      />
+    </Wrapper>
   );
 };
 
