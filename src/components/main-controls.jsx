@@ -20,7 +20,7 @@ const StyledLoopInput = styled(LoopInput)`
   width: 96px;
 `;
 
-const AddFiles = ({ addFiles, setAudioData }) => {
+const MainControls = ({ addFiles, setAudioData }) => {
   const defaultLoop = useSelector((state) => state.defaultLoop);
   const dispatch = useDispatch();
 
@@ -72,9 +72,9 @@ const AddFiles = ({ addFiles, setAudioData }) => {
   );
 };
 
-AddFiles.propTypes = {
+MainControls.propTypes = {
   addFiles: PropTypes.func.isRequired,
   setAudioData: PropTypes.func.isRequired,
 };
 
-export default AddFiles;
+export default MainControls;

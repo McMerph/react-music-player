@@ -7,7 +7,7 @@ import prettyPrintSeconds from '../utils/pretty-print-seconds';
 import asyncPool from '../utils/async-pool';
 import Stage from '../domain/stage';
 import Content from '../components/content';
-import AddFiles from '../components/add-files';
+import MainControls from '../components/main-controls';
 
 // TODO Make it adjustable? Store in localStorage?
 const CONCURRENCY = 4;
@@ -86,7 +86,7 @@ const IndexPage = () => {
         repeat={audioData.repeat}
         setAudioData={setAudioData}
       />
-      <AddFiles addFiles={addFiles} setAudioData={setAudioData} />
+      <MainControls addFiles={addFiles} setAudioData={setAudioData} />
     </Wrapper>
   );
 };
