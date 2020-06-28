@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import loadable from '@loadable/component';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import readSrc from '../utils/read-src';
@@ -6,8 +7,11 @@ import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds'
 import prettyPrintSeconds from '../utils/pretty-print-seconds';
 import asyncPool from '../utils/async-pool';
 import Stage from '../domain/stage';
-import Content from '../components/content';
 import MainControls from '../components/main-controls';
+
+const LoadableContent = loadable(() => import('../components/content'), {
+  fallback: <p>Loading...</p>,
+});
 
 // TODO Make it adjustable? Store in localStorage?
 const CONCURRENCY = 4;
@@ -74,7 +78,7 @@ const IndexPage = () => {
 
   return (
     <Wrapper>
-      <Content
+      <LoadableContent
         stage={audioData.stage}
         src={audioData.src}
         list={audioData.list.map(({ file, loop, duration }) => ({
