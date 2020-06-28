@@ -1,7 +1,15 @@
 // TODO Provide captions for media - https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/media-has-caption.md
 
-import React, { createRef, useRef, useCallback, useState } from 'react';
+import { assocPath } from 'ramda';
+import React, {
+  createRef,
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -27,6 +35,8 @@ const Canvas = styled.canvas`
 `;
 
 const Content = ({ stage, src, list, repeat, setAudioData }) => {
+  const endedRef = useRef(false);
+  const defaultLoop = useSelector((state) => state.defaultLoop);
   const [trackInfo, setTrackInfo] = useState(null);
   const audioRef = useRef(null);
   const canvasRef = createRef();
@@ -37,23 +47,6 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
       visualize(node, canvasRef.current);
     }
   });
-
-  if (stage === Stage.Initial) return null;
-  if (stage === Stage.AddingFiles)
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
-  if (stage === Stage.Error)
-    return (
-      <div>
-        <ErrorOutlineIcon color="secondary" />
-      </div>
-    );
-
-  const firstTrack = list[0].current;
-  const lastTrack = list[list.length - 1].current;
   const [play, pause] = ['play', 'pause'].map((action) => () => {
     audioRef.current[action]();
   });
@@ -80,6 +73,35 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
   const [toPrevious, toNext] = [false, true].map((forward) => () => {
     toNeighbor(forward);
   });
+  const currentIndex = list.findIndex((v) => v.current);
+  useEffect(() => {
+    if (endedRef.current) {
+      if (list[currentIndex].loop === defaultLoop) {
+        toNext();
+      } else {
+        audioRef.current.currentTime = 0;
+        play();
+      }
+      endedRef.current = false;
+    }
+  }, [list]);
+
+  if (stage === Stage.Initial) return null;
+  if (stage === Stage.AddingFiles)
+    return (
+      <div>
+        <CircularProgress />
+      </div>
+    );
+  if (stage === Stage.Error)
+    return (
+      <div>
+        <ErrorOutlineIcon color="secondary" />
+      </div>
+    );
+
+  const firstTrack = list[0].current;
+  const lastTrack = list[list.length - 1].current;
   const toggleRepeat = () => {
     setAudioData((prev) => ({ ...prev, repeat: !prev.repeat }));
   };
@@ -95,7 +117,16 @@ const Content = ({ stage, src, list, repeat, setAudioData }) => {
           const { currentTime, duration } = audioRef.current;
           setTrackInfo({ currentTime, duration });
           if (audioRef.current.ended) {
-            toNext();
+            endedRef.current = true;
+            setAudioData((prev) =>
+              assocPath(
+                ['list', currentIndex, 'loop'],
+                list[currentIndex].loop <= 1
+                  ? defaultLoop
+                  : list[currentIndex].loop - 1,
+                prev
+              )
+            );
           }
         }}
       />
@@ -143,6 +174,7 @@ Content.propTypes = {
     PropTypes.exact({
       current: PropTypes.bool.isRequired,
       file: PropTypes.instanceOf(File),
+      loop: PropTypes.number.isRequired,
       duration: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,

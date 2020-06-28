@@ -1,3 +1,4 @@
+import { assocPath } from 'ramda';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -8,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import Stage from '../domain/stage';
+import LoopInput from './loop-input';
 
 const Wrapper = styled.div`
   background-color: ${(props) => props.backgroundColor};
@@ -59,6 +61,10 @@ const StyledListItem = styled(({ isDragging, children, ...rest }) => (
     transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
   }
 `;
+const StyledLoopInput = styled(LoopInput)`
+  width: 48px;
+  margin-left: 12px;
+`;
 
 export default function Playlist({ list, setAudioData }) {
   const theme = useTheme();
@@ -97,7 +103,7 @@ export default function Playlist({ list, setAudioData }) {
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...droppableProvided.droppableProps}
             >
-              {list.map(({ current, file, duration }, i) => (
+              {list.map(({ current, file, loop, duration }, i) => (
                 <Draggable draggableId={file.name} index={i} key={file.name}>
                   {(draggableProvided, draggableSnapshot) => (
                     <StyledListItem
@@ -114,6 +120,15 @@ export default function Playlist({ list, setAudioData }) {
                     >
                       <ListItemText primary={file.name} />
                       <Typography variant="subtitle2">{duration}</Typography>
+                      <StyledLoopInput
+                        label="loop"
+                        loopNumber={loop}
+                        setLoopNumber={(updatedLoop) => {
+                          setAudioData((prev) =>
+                            assocPath(['list', i, 'loop'], updatedLoop, prev)
+                          );
+                        }}
+                      />
                     </StyledListItem>
                   )}
                 </Draggable>
@@ -132,6 +147,7 @@ Playlist.propTypes = {
     PropTypes.exact({
       current: PropTypes.bool.isRequired,
       file: PropTypes.instanceOf(File),
+      loop: PropTypes.number.isRequired,
       duration: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,

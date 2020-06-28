@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import readSrc from '../utils/read-src';
 import readAudioDurationInSeconds from '../utils/read-audio-duration-in-seconds';
@@ -16,7 +17,7 @@ const Wrapper = styled.div`
   padding: 12px 12px 0;
 `;
 
-const getList = async (files) => {
+const getList = async (files, loop) => {
   const durations = await asyncPool(
     CONCURRENCY,
     files,
@@ -25,11 +26,13 @@ const getList = async (files) => {
 
   return files.map((file, i) => ({
     file,
+    loop,
     duration: prettyPrintSeconds(durations[i]),
   }));
 };
 
 const IndexPage = () => {
+  const defaultLoop = useSelector((state) => state.defaultLoop);
   const [audioData, setAudioData] = useState({
     stage: Stage.Initial,
     repeat: false,
@@ -53,7 +56,7 @@ const IndexPage = () => {
       setAudioData((prev) => ({ ...prev, stage: Stage.AddingFiles }));
       const [src, list] = await Promise.all([
         readSrc(files[0]),
-        getList(Array.from(files)),
+        getList(Array.from(files), defaultLoop),
       ]);
       setAudioData((prev) => ({
         ...prev,
@@ -74,9 +77,10 @@ const IndexPage = () => {
       <Content
         stage={audioData.stage}
         src={audioData.src}
-        list={audioData.list.map(({ file, duration }) => ({
+        list={audioData.list.map(({ file, loop, duration }) => ({
           current: audioData.file === file,
           file,
+          loop,
           duration,
         }))}
         repeat={audioData.repeat}
