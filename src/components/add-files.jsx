@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import styled from 'styled-components';
 import ActionType from '../store/action-type';
 import LoopInput from './loop-input';
@@ -19,7 +20,7 @@ const StyledLoopInput = styled(LoopInput)`
   width: 96px;
 `;
 
-const AddFiles = ({ addFiles }) => {
+const AddFiles = ({ addFiles, setAudioData }) => {
   const defaultLoop = useSelector((state) => state.defaultLoop);
   const dispatch = useDispatch();
 
@@ -55,10 +56,25 @@ const AddFiles = ({ addFiles }) => {
         loopNumber={defaultLoop}
         setLoopNumber={saveDefaultLoop}
       />
+      <IconButton
+        aria-label="reset track loops to default value"
+        color="primary"
+        onClick={() => {
+          setAudioData((prev) => ({
+            ...prev,
+            list: prev.list.map((v) => ({ ...v, loop: defaultLoop })),
+          }));
+        }}
+      >
+        <RotateLeftIcon />
+      </IconButton>
     </Wrapper>
   );
 };
 
-AddFiles.propTypes = { addFiles: PropTypes.func.isRequired };
+AddFiles.propTypes = {
+  addFiles: PropTypes.func.isRequired,
+  setAudioData: PropTypes.func.isRequired,
+};
 
 export default AddFiles;

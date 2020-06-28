@@ -86,7 +86,7 @@ const IndexPage = () => {
         repeat={audioData.repeat}
         setAudioData={setAudioData}
       />
-      <AddFiles addFiles={addFiles} />
+      <AddFiles addFiles={addFiles} setAudioData={setAudioData} />
     </Wrapper>
   );
 };
